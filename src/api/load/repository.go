@@ -64,18 +64,14 @@ func (r *loadrepository) StartSychronization() {
 	_ = time.AfterFunc(time.Second*time.Duration(SyncTime), r.StartSychronization)
 }
 func (r *loadrepository) Synca() (bool, int) {
-	lastsync := r.LastSynchronization()
-	log.Println("Synca ---------------------------- hello", lastsync)
+	lastsync, counts := r.LastSynchronization()
 	counter := 0
 	itemscount := 0
 	res := true
-	if lastsync.ID == 1 {
+	if counts == 1 {
 		// do full synchronization
-		log.Println("Synca ---------------------------- hello step 1")
 		for _, product := range r.DataFromDBA(false, time.Now()) {
-			log.Println("Synca ---------------------------- hello step 1a", product)
 			exist := r.CheckIfExistDBB(false, product)
-			log.Println("Synca ---------------------------- hello step 1b", exist)
 			if !exist {
 			checka:
 				for !r.InsertDataDBB(product) {
@@ -90,7 +86,6 @@ func (r *loadrepository) Synca() (bool, int) {
 			}
 		}
 	} else {
-		log.Println("Synca ---------------------------- hello=================")
 		dataFromA := r.DataFromDBA(true, lastsync.Dated)
 	asdfs:
 		for _, product := range dataFromA {
@@ -110,19 +105,21 @@ func (r *loadrepository) Synca() (bool, int) {
 	}
 	return res, itemscount
 }
-func (r *loadrepository) LastSynchronization() *Synca {
+func (r *loadrepository) LastSynchronization() (*Synca, int64) {
 	GormDB, err1 := CentralRepo.Getconnected()
 	if err1 != nil {
 		log.Fatal("Got an error trying to connect to sync db")
-		return nil
+		return nil, 0
 	}
 	defer CentralRepo.DbClose(GormDB)
 	synca := &Synca{}
+	var counter int64
 	res := GormDB.Where("database_a = ? AND database_b = ?  AND ending = ? ", r.DatabaseA, r.Databaseb, "").Last(&synca)
 	if res.Error != nil {
-		return nil
+		return nil, 0
 	}
-	return synca
+	GormDB.Where("database_a = ? AND database_b = ?  AND ending = ? ", r.DatabaseA, r.Databaseb, "").Count(&counter)
+	return synca, counter
 }
 
 func (r *loadrepository) DataFromDBA(status bool, dated ...time.Time) []*Product {

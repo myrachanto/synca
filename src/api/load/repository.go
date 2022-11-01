@@ -150,7 +150,7 @@ func (r *loadrepository) DataFromDBAs(status bool, dated ...time.Time) []*Produc
 	if status {
 		// fmt.Println("===================== status")
 		filter := bson.M{
-			"dated": bson.M{"$gte": dated[0]},
+			"created_at": bson.M{"$gte": dated[0]},
 		}
 		cursor, err := collection.Find(ctx, filter)
 		if err != nil {

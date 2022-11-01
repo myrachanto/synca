@@ -26,7 +26,6 @@ func ApiLoader() {
 	router := gin.Default()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-	router.Use(gin.Recovery())
 
 	// router.Use(cors.New(cors.Config{
 	// 	AllowOrigins:     []string{"https://foo.com"},

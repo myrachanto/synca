@@ -3,8 +3,7 @@ package routes
 import (
 	"sync"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/gin-gonic/gin"
 	"github.com/myrachanto/synca/src/api/load"
 )
 
@@ -24,11 +23,22 @@ func ApiLoader() {
 	}
 
 	loader := load.NewloadController(load.NewloadService(load.NewloadRepo(synca[0].DatabaseA, synca[0].DatabaseAUrl, synca[0].Databaseb, synca[0].DatabasebURL, synca[0].CollectionName)))
-	e := echo.New()
+	router := gin.Default()
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
+	router.Use(gin.Recovery())
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	// router.Use(cors.New(cors.Config{
+	// 	AllowOrigins:     []string{"https://foo.com"},
+	// 	AllowMethods:     []string{"PUT", "PATCH"},
+	// 	AllowHeaders:     []string{"Origin"},
+	// 	ExposeHeaders:    []string{"Content-Length"},
+	// 	AllowCredentials: true,
+	// 	AllowOriginFunc: func(origin string) bool {
+	// 		return origin == "https://github.com"
+	// 	},
+	// 	MaxAge: 12 * time.Hour,
+	// }))
 	l := len(synca)
 	wg.Add(l)
 	for _, sita := range synca {
@@ -40,15 +50,37 @@ func ApiLoader() {
 	}
 	wg.Wait()
 
-	// _ = time.AfterFunc(time.Second*3, load.Loadrepository.StartSychronization)
-	api := e.Group("/api")
+	api := router.Group("/api")
 
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	log.Fatal("Error loading .env file in routes")
-	// }
-	api.GET("/getURL", loader.Synca).Name = "get-url"
+	api.GET("/getsyncs", loader.GetAll)
 
-	// PORT := os.Getenv("PORT")
-	e.Logger.Fatal(e.Start(":3500"))
+	router.Run(":3500")
 }
+
+// func ApiLoader() {
+// 	synca := []loadrepository{
+// 		{"single", "mongodb://localhost:27017", "syncab", "mongodb://localhost:27017", "product"},
+// 	}
+
+// 	loader := load.NewloadController(load.NewloadService(load.NewloadRepo(synca[0].DatabaseA, synca[0].DatabaseAUrl, synca[0].Databaseb, synca[0].DatabasebURL, synca[0].CollectionName)))
+// 	e := echo.New()
+
+// 	e.Use(middleware.Logger())
+// 	e.Use(middleware.Recover())
+// 	e.Use(middleware.CORS())
+// 	l := len(synca)
+// 	wg.Add(l)
+// 	for _, sita := range synca {
+// 		go func(sita loadrepository) {
+// 			dg := load.NewloadRepo(sita.DatabaseA, sita.DatabaseAUrl, sita.Databaseb, sita.DatabasebURL, sita.CollectionName)
+// 			dg.StartSychronization()
+// 		}(sita)
+// 		wg.Done()
+// 	}
+// 	wg.Wait()
+// 	api := e.Group("/api")
+
+// 	api.GET("/getsyncs", loader.GetAll).Name = "get-all"
+
+//		e.Logger.Fatal(e.Start(":3500"))
+//	}

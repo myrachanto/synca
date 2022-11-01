@@ -1,7 +1,6 @@
 package load
 
 import (
-	"fmt"
 	"log"
 
 	httperrors "github.com/myrachanto/erroring"
@@ -27,5 +26,4 @@ func DbClose(client *mongo.Client) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Connection to MongoDB closed.")
 }

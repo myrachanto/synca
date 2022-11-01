@@ -3,7 +3,7 @@ package load
 import (
 	"net/http"
 
-	"github.com/labstack/echo/v4"
+	"github.com/gin-gonic/gin"
 )
 
 // loadController ...
@@ -12,7 +12,8 @@ var (
 )
 
 type LoadControllerInterface interface {
-	Synca(c echo.Context) error
+	Synca(c *gin.Context)
+	GetAll(c *gin.Context)
 }
 
 type loadController struct {
@@ -24,7 +25,20 @@ func NewloadController(ser LoadServiceInterface) LoadControllerInterface {
 		ser,
 	}
 }
-func (controller loadController) Synca(c echo.Context) error {
+func (controller loadController) Synca(c *gin.Context) {
 	controller.service.Synca()
-	return c.JSON(http.StatusOK, "success")
+	// return c.JSON(http.StatusOK, "success")
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
+	// return
+}
+func (controller loadController) GetAll(c *gin.Context) {
+	syncs, err := controller.service.GetAll()
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "failed to get logs"})
+		// return c.JSON(err.Code(), err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"items": syncs})
+	// return c.JSON(http.StatusOK, syncs)
+	// return
 }

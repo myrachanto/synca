@@ -3,6 +3,7 @@ package routes
 import (
 	"sync"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/myrachanto/synca/src/api/load"
 )
@@ -26,18 +27,7 @@ func ApiLoader() {
 	router := gin.Default()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-
-	// router.Use(cors.New(cors.Config{
-	// 	AllowOrigins:     []string{"https://foo.com"},
-	// 	AllowMethods:     []string{"PUT", "PATCH"},
-	// 	AllowHeaders:     []string{"Origin"},
-	// 	ExposeHeaders:    []string{"Content-Length"},
-	// 	AllowCredentials: true,
-	// 	AllowOriginFunc: func(origin string) bool {
-	// 		return origin == "https://github.com"
-	// 	},
-	// 	MaxAge: 12 * time.Hour,
-	// }))
+	router.Use(cors.Default())
 	l := len(synca)
 	wg.Add(l)
 	for _, sita := range synca {
@@ -57,10 +47,10 @@ func ApiLoader() {
 }
 
 // func ApiLoader() {
-// 
-	// synca := []loadrepository{
-	// 	{DatabaseA: "single", DatabaseAUrl: "mongodb://localhost:27017", Databaseb: "syncab", DatabasebURL: "mongodb://localhost:27017", CollectionName: "product"},
-	// }
+//
+// synca := []loadrepository{
+// 	{DatabaseA: "single", DatabaseAUrl: "mongodb://localhost:27017", Databaseb: "syncab", DatabasebURL: "mongodb://localhost:27017", CollectionName: "product"},
+// }
 
 // 	loader := load.NewloadController(load.NewloadService(load.NewloadRepo(synca[0].DatabaseA, synca[0].DatabaseAUrl, synca[0].Databaseb, synca[0].DatabasebURL, synca[0].CollectionName)))
 // 	e := echo.New()

@@ -64,6 +64,35 @@ func (r *loadrepository) StartSychronization() {
 	_ = time.AfterFunc(time.Second*time.Duration(SyncTime), r.StartSychronization)
 }
 func (r *loadrepository) Synca() (bool, int) {
+	if r.DatabaseA == "" {
+		products, err := Fetcher(r.DatabaseAUrl)
+		if err != nil {
+			return false, 0
+		}
+		counter := 0
+		itemscount := 0
+		for _, product := range products {
+			exist := r.CheckIfExistDBB(false, product)
+			if !exist {
+			checka:
+				for !r.InsertDataDBB(product) {
+					r.InsertDataDBB(product)
+					counter++
+					itemscount++
+					if counter >= 5 {
+						break checka
+					}
+				}
+			}
+		}
+		return true, counter
+	} else {
+		return r.Syncation()
+	}
+
+}
+
+func (r *loadrepository) Syncation() (bool, int) {
 	lastsync, counts := r.LastSynchronization()
 	counter := 0
 	itemscount := 0
@@ -122,16 +151,19 @@ func (r *loadrepository) LastSynchronization() (*Synca, int64) {
 	return synca, counter
 }
 
+//	func (r *loadrepository) DataFromDBA(status bool, dated ...time.Time) []*Product {
+//		if r.DatabaseA == "" {
+//			products, err := Fetcher(r.DatabaseAUrl)
+//			if err != nil {
+//				log.Println(err)
+//			}
+//			return products
+//		} else {
+//			return r.DataFromDBAs(status, dated...)
+//		}
+//	}
 func (r *loadrepository) DataFromDBA(status bool, dated ...time.Time) []*Product {
-	if r.DatabaseA == "" {
-		products, err := Fetcher(r.DatabaseAUrl)
-		if err != nil {
-			log.Println(err)
-		}
-		return products
-	} else {
-		return r.DataFromDBAs(status, dated...)
-	}
+	return r.DataFromDBAs(status, dated...)
 }
 func (r *loadrepository) DataFromDBAs(status bool, dated ...time.Time) []*Product {
 	// fmt.Println("dba -----------------step 1", r.DatabaseAUrl, r.DatabaseA)

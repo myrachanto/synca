@@ -16,8 +16,8 @@ var (
 	Loadrepository LoadRepoInterface = &loadrepository{}
 	Repo                             = &loadrepository{}
 	ctx                              = context.TODO()
-	SyncTime                         = 30
-	SyncTimeFrame                    = "Seconds"
+	SyncTime                         = 6
+	SyncTimeFrame                    = "Hours"
 )
 
 type LoadRepoInterface interface {
@@ -61,7 +61,7 @@ func (r *loadrepository) StartSychronization() {
 		fmt.Println(resp)
 		// emailing.Emails.Emailing(res)
 	}
-	_ = time.AfterFunc(time.Second*time.Duration(SyncTime), r.StartSychronization)
+	_ = time.AfterFunc(time.Hour*time.Duration(SyncTime), r.StartSychronization)
 }
 func (r *loadrepository) Synca() (bool, int) {
 	if r.DatabaseA == "" {

@@ -141,11 +141,11 @@ func (r *loadrepository) LastSynchronization() (*Synca, int64) {
 	defer CentralRepo.DbClose(GormDB)
 	synca := &Synca{}
 	var counter int64
-	res := GormDB.Where("database_a = ? AND database_b = ?  AND ending = ? ", r.DatabaseA, r.Databaseb, "").Last(&synca)
+	res := GormDB.Where("databaseaurl = ? AND database_b = ?  AND ending = ? ", r.DatabaseA, r.Databaseb, "").Last(&synca)
 	if res.Error != nil {
 		return nil, 0
 	}
-	GormDB.Where("database_a = ? AND database_b = ?  AND ending = ? ", r.DatabaseA, r.Databaseb, "").Count(&counter)
+	GormDB.Where("databaseaurl = ? AND database_b = ?  AND ending = ? ", r.DatabaseA, r.Databaseb, "").Count(&counter)
 	return synca, counter
 }
 
@@ -225,12 +225,10 @@ func (r *loadrepository) CheckIfExistDBB(status bool, product *Product, dated ..
 	return err1 == nil
 }
 func (r *loadrepository) InsertDataDBB(product *Product) bool {
-	fmt.Println("++++++++++++++++++++++++ insert db step 1")
 	conn, err := Mongodb(r.DatabasebURL, r.Databaseb)
 	if err != nil {
 		log.Panicln("could not Insert to database B")
 	}
-	fmt.Println("++++++++++++++++++++++++", product)
 	collection := conn.Collection(r.CollectionName)
 	defer DbClose(conn.Client())
 	product.ID = primitive.NilObjectID
@@ -247,7 +245,7 @@ func (r *loadrepository) RecordSynca(status string) (bool, string) {
 	defer CentralRepo.DbClose(GormDB)
 	name := r.GeneCode()
 	dated := time.Now()
-	synca := &Synca{Name: name, DatabaseA: r.DatabaseA, DatabaseB: r.Databaseb, Status: status, Dated: dated, Start: time.Now()}
+	synca := &Synca{Name: name, DatabaseA: r.DatabaseA, DatabaseAUrl: r.DatabaseAUrl, DatabaseB: r.Databaseb, DatabaseBUrl: r.DatabasebURL, Status: status, Dated: dated, Start: time.Now()}
 	res := GormDB.Create(&synca)
 	if res.Error != nil {
 		return false, ""

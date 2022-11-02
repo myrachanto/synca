@@ -19,7 +19,7 @@ type loadrepository struct {
 
 func ApiLoader() {
 	synca := []loadrepository{
-		{"single", "mongodb://localhost:27017", "syncab", "mongodb://localhost:27017", "product"},
+		{DatabaseA: "single", DatabaseAUrl: "mongodb://localhost:27017", Databaseb: "syncab", DatabasebURL: "mongodb://localhost:27017", CollectionName: "product"},
 	}
 
 	loader := load.NewloadController(load.NewloadService(load.NewloadRepo(synca[0].DatabaseA, synca[0].DatabaseAUrl, synca[0].Databaseb, synca[0].DatabasebURL, synca[0].CollectionName)))
@@ -57,9 +57,10 @@ func ApiLoader() {
 }
 
 // func ApiLoader() {
-// 	synca := []loadrepository{
-// 		{"single", "mongodb://localhost:27017", "syncab", "mongodb://localhost:27017", "product"},
-// 	}
+// 
+	// synca := []loadrepository{
+	// 	{DatabaseA: "single", DatabaseAUrl: "mongodb://localhost:27017", Databaseb: "syncab", DatabasebURL: "mongodb://localhost:27017", CollectionName: "product"},
+	// }
 
 // 	loader := load.NewloadController(load.NewloadService(load.NewloadRepo(synca[0].DatabaseA, synca[0].DatabaseAUrl, synca[0].Databaseb, synca[0].DatabasebURL, synca[0].CollectionName)))
 // 	e := echo.New()

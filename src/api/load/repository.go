@@ -108,7 +108,6 @@ func (r *loadrepository) Syncation() (bool, int) {
 					counter++
 					itemscount++
 					if counter >= 5 {
-						res = false
 						break checka
 					}
 				}
@@ -125,7 +124,6 @@ func (r *loadrepository) Syncation() (bool, int) {
 					counter++
 					itemscount++
 					if counter >= 5 {
-						res = false
 						break asdfs
 					}
 				}
